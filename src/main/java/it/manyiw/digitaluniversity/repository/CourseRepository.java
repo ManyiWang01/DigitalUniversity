@@ -1,15 +1,11 @@
 package it.manyiw.digitaluniversity.repository;
 
 import it.manyiw.digitaluniversity.domain.Course;
-import it.manyiw.digitaluniversity.domain.ProfessorCourse;
-import it.manyiw.digitaluniversity.domain.Student;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Repository
 public class CourseRepository {
@@ -17,20 +13,17 @@ public class CourseRepository {
     @PersistenceContext
     private EntityManager em;
 
-    public void save(Course course) {
+    public Integer save(Course course) {
         em.persist(course);
+        return course.getId();
     }
 
     public Course find(int id) {
         return em.find(Course.class, id);
     }
 
-    public Course merge(Course course) {
-        return em.merge(course);
-    }
-
     public Course findCourseByTitle(String title) {
-        String jpql = "select c from Course c where c.title = :title and c.active = :active";
+        String jpql = "select c from Course c where c.title = :title";
         return em.createQuery(jpql, Course.class)
                 .setParameter("title", title)
                 .getSingleResult();
@@ -42,56 +35,51 @@ public class CourseRepository {
                 .getResultList();
     }
 
-    private List<Course> findAllCoursesByStatus(boolean status) {
-        String jpql = "select c from Course c where c.active = :status";
+    public Course findClosedCourseById(Integer courseId) {
+        String sql = "select * from courses where course_id = ? and isClosed = true";
+        return (Course) em.createNativeQuery(sql, Course.class)
+                .setParameter(1, courseId)
+                .getSingleResult();
+    }
+
+    public boolean isClosed(Integer courseId) {
+        String sql = "select count(*) from courses where course_id = ? and isClosed = true";
+        return (Integer) em.createNativeQuery(sql, Course.class)
+                .setParameter(1, courseId)
+                .getSingleResult() > 0;
+    }
+
+    public List<Course> findAllOpenCoursesByYear(int year) {
+        String jpql = "select c from Course c where c.year = :year";
         return em.createQuery(jpql, Course.class)
-                .setParameter("status", status)
+                .setParameter("year", year)
                 .getResultList();
     }
-
-    public List<Course> findAllOpenCourses() {
-        return findAllCoursesByStatus(true);
-    }
-
-    public List<Course> findAllClosedCourses() {
-        return findAllCoursesByStatus(false);
-    }
-
-    public List<Course> findCoursesByAcademicYear(int academicYear) {
-        String jpql = "select c from Course c where c.academicYear = :academicYear";
-        return em.createQuery(jpql, Course.class)
-                .setParameter("academicYear", academicYear)
+    public List<Course> findAllCoursesByYear(int year) {
+        String sql = "select * from courses where year = ?";
+        return em.createNativeQuery(sql, Course.class)
+                .setParameter(1, year)
                 .getResultList();
-    }
-
-    public Set<Student> findAttendingStudents(int courseId) {
-        String jpql = "select s from Course c join c.attendingStudents s where c.id = :courseId";
-        List<Student> students = em.createQuery(jpql, Student.class)
-                .setParameter("courseId", courseId)
-                .getResultList();
-        return new HashSet<>(students);
-    }
-
-    public Set<ProfessorCourse> findTeachingProfs(int courseId) {
-        String jpql = "select pc from Course c join c.teachingProfs pc where c.id = :courseId";
-        List<ProfessorCourse> teachingProfs = em.createQuery(jpql, ProfessorCourse.class)
-                .setParameter("courseId", courseId)
-                .getResultList();
-        return new HashSet<>(teachingProfs);
     }
 
     public List<Course> findAllOpenCoursesByMajor(int majorId) {
-        String jpql = "select c from Course c where c.major.id = :majorId and c.active = true";
-        return em.createQuery(jpql, Course.class)
-                .setParameter("majorId", majorId)
-                .getResultList();
-    }
-
-    public List<Course> findAllCoursesByMajor(int majorId) {
         String jpql = "select c from Course c where c.major.id = :majorId";
         return em.createQuery(jpql, Course.class)
                 .setParameter("majorId", majorId)
                 .getResultList();
+    }
+    public List<Course> findAllCoursesByMajor(int majorId) {
+        String sql = "select * from courses where majorId = ?";
+        return em.createNativeQuery(sql, Course.class)
+                .setParameter(1, majorId)
+                .getResultList();
+    }
+
+    public boolean existsById(Integer courseId) {
+        String jpql = "select count(c) from Course c where c.id = :courseId";
+        return em.createQuery(jpql, Long.class)
+                .setParameter("courseId", courseId)
+                .getSingleResult() > 0;
     }
 
 }

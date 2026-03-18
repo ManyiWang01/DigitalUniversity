@@ -1,15 +1,18 @@
 package it.manyiw.digitaluniversity.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.SoftDelete;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "courses")
+@SoftDelete(columnName = "isClosed")
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,23 +35,30 @@ public class Course {
     @JoinColumn(name = "majorId", nullable = false)
     private Major major;
 
-    @Min(value = 1990)
+    @Min(value = 1)
+    @Max(value = 3)
     @Column(nullable = false)
-    private int academicYear = 1990;
+    private int year = 1;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "student_course", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))
-    private Set<Student> attendingStudents = new HashSet<>();
+    // not changing really much adding them
+//    private int semester;
+//    private int credit;
+
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(name = "student_course", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))
+//    private Set<Student> attendingStudents = new HashSet<>();
+    @OneToMany(mappedBy = "course", cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+    private Set<Enrollment> enrolledStudents = new HashSet<>();
 
     @OneToMany(mappedBy = "course", cascade = {CascadeType.REFRESH, CascadeType.MERGE})
-    private Set<ProfessorCourse> teachingProfs = new HashSet<>();
+    private Set<Assignment> teachingProfs = new HashSet<>();
 
     @Column(nullable = false)
-    private boolean active = true;
+    private boolean isClosed = true;
 
     public Course() {}
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -80,36 +90,26 @@ public class Course {
         return major;
     }
 
-    public void setAcademicYear(int academicYear) {
-        this.academicYear = academicYear;
+    public void setYear(int year) {
+        this.year = year;
     }
-    public int getAcademicYear() {
-        return academicYear;
-    }
-
-    public Set<Student> getAttendingStudents() {
-        return attendingStudents;
-    }
-    public void addAttendingStudent(Student student) {
-        if (student == null) {return;}
-        this.attendingStudents.add(student);
-        student.getAttendedCourses().add(this);
-    }
-    public void removeAttendingStudent(Student student) {
-        if (student == null) {return;}
-        this.attendingStudents.remove(student);
-        student.getAttendedCourses().remove(this);
+    public int getYear() {
+        return year;
     }
 
-    public Set<ProfessorCourse> getTeachingProfs() {
+    public Set<Enrollment> getEnrolledStudents() {
+        return enrolledStudents;
+    }
+
+    public Set<Assignment> getTeachingProfs() {
         return teachingProfs;
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isClosed() {
+        return isClosed;
     }
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setClosed(boolean closed) {
+        this.isClosed = closed;
     }
 
     @Override

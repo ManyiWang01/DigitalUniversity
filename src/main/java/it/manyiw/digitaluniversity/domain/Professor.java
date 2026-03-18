@@ -9,6 +9,6 @@ import java.util.Set;
 @Table(name = "professors")
 public class Professor extends Person {
 
-    @OneToMany(mappedBy = "professor")
-    private Set<ProfessorCourse> assignments = new HashSet<>();
+    @OneToMany(mappedBy = "professor",  cascade = CascadeType.ALL)
+    private Set<Assignment> assignments = new HashSet<>();
 }

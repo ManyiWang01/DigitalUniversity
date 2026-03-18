@@ -1,6 +1,5 @@
 package it.manyiw.digitaluniversity.repository;
 
-import it.manyiw.digitaluniversity.domain.Course;
 import it.manyiw.digitaluniversity.domain.Major;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -15,42 +14,41 @@ public class MajorRepository {
 
     public MajorRepository() {}
 
-    public void save(Major major) {
+    public Integer save(Major major) {
         em.persist(major);
+        return major.getId();
     }
 
-    public Major merge(Major major) {
-        return em.merge(major);
-    }
-
-    public void deleteById(Integer majorId) {
-        String jpql = "update Major m set m.status = false where m.id = :majorId";
-        em.createQuery(jpql)
-                .setParameter("majorId", majorId)
-                .executeUpdate();
+    public void delete(Integer majorId) {
+        Major major = em.find(Major.class, majorId);
+        if (major != null) {
+            em.remove(major);
+        }
     }
 
     public Major findMajorById(Integer id) {
         return em.find(Major.class, id);
     }
 
-    public List<Major> findAllMajors() {
+    public List<Major> findAllOpenMajors() {
         String jpql = "select m from Major m";
         return em.createQuery(jpql, Major.class).getResultList();
     }
 
-    public List<Major> findAllActivateMajors() {
-        String jpql = "select m from Major m where m.status = true";
-        return em.createQuery(jpql, Major.class).getResultList();
+    public List<Major> findAllPastMajors() {
+        String sql = "select * from majors where deleted = true";
+        return em.createNativeQuery(sql, Major.class).getResultList();
     }
 
-    public List<Major> findAllPastMajors() {
-        String jpql = "select m from Major m where m.status = false";
-        return em.createQuery(jpql, Major.class).getResultList();
+    public Major findPastMajorById(Integer majorId) {
+        String sql = "select * from majors where major_id = ? and deleted = true";
+        return (Major) em.createNativeQuery(sql, Major.class)
+                .setParameter(1, majorId)
+                .getSingleResult();
     }
 
     public Major findMajorByName(String name) {
-        String  jpql = "select m from Major m where m.name = :name and m.status = true";
+        String  jpql = "select m from Major m where m.name = :name";
         return em.createQuery(jpql, Major.class)
                 .setParameter("name", name)
                 .getSingleResult();

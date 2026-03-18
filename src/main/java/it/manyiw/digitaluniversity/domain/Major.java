@@ -2,9 +2,12 @@ package it.manyiw.digitaluniversity.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SoftDelete;
 
 @Entity
 @Table(name = "majors")
+@SoftDelete(columnName = "deleted")
 public class Major {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,7 +18,7 @@ public class Major {
     @Column(nullable = false, unique = true)
     private String name;
 
-    private boolean status = true;
+    private boolean deleted = false;
 
     public Major() {}
 
@@ -31,11 +34,11 @@ public class Major {
         this.name = name;
     }
 
-    public boolean isStatus() {
-        return status;
+    public boolean isDeleted() {
+        return deleted;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void reopen() {
+        this.deleted = false;
     }
 }

@@ -1,14 +1,19 @@
-package it.manyiw.digitaluniversity.domain;
+package it.manyiw.digitaluniversity.domain.compositekey;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 // Composite Primary Key Class
-public class ProfessorCourseId implements Serializable {
+public class AssignmentId implements Serializable {
     private Integer professor;
     private Integer course;
 
-    public ProfessorCourseId() {}
+    public AssignmentId() {}
+
+    public AssignmentId(Integer professor, Integer course) {
+        this.professor = professor;
+        this.course = course;
+    }
 
     public void setProfessor(Integer professor) {
         this.professor = professor;
@@ -22,11 +27,12 @@ public class ProfessorCourseId implements Serializable {
     public Integer getCourse() {
         return course;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ProfessorCourseId)) return false;
-        ProfessorCourseId that = (ProfessorCourseId) o;
+        if (!(o instanceof AssignmentId)) return false;
+        AssignmentId that = (AssignmentId) o;
         return Objects.equals(professor, that.professor) && Objects.equals(course, that.course);
     }
 

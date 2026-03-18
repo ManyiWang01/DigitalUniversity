@@ -1,7 +1,6 @@
 package it.manyiw.digitaluniversity.repository;
 
 import it.manyiw.digitaluniversity.domain.Person;
-import it.manyiw.digitaluniversity.domain.Student;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
@@ -18,15 +17,12 @@ public abstract class PersonRepository<T extends Person> {
         this.entityClass = entityClass;
     }
 
-    public void save(T person) {
+    public int save(T person) {
         em.persist(person);
+        return person.getId();
     }
 
-    public T merge(T person) {
-        return em.merge(person);
-    }
-
-    public T findById(int id) {
+    public T find(int id) {
         return em.find(entityClass, id);
     }
 
@@ -71,13 +67,6 @@ public abstract class PersonRepository<T extends Person> {
                 .getSingleResult();
     }
 
-    public boolean existsByInstitutionalMail(String institutionalMail) {
-        String jpql = "select count(p) from " + entityClass.getSimpleName() + " p where p.institutionalMail = :institutionalMail";
-        Long count = em.createQuery(jpql, Long.class)
-                .setParameter("institutionalMail", institutionalMail)
-                .getSingleResult();
-        return count > 0;
-    }
 
     public List<T> findByAge(Integer age) {
         String jpql = "select p from " + entityClass.getSimpleName() + " p where p.age = :age";
@@ -85,11 +74,26 @@ public abstract class PersonRepository<T extends Person> {
                 .setParameter("age", age)
                 .getResultList();
     }
-
     public List<T> findByPersonalEmail(String email) {
         String jpql = "select p from " + entityClass.getSimpleName() + " p where p.email = :email";
         return em.createQuery(jpql, entityClass)
                 .setParameter("email", email)
                 .getResultList();
     }
+
+    public boolean existsByInstitutionalMail(String institutionalMail) {
+        String jpql = "select count(p) from " + entityClass.getSimpleName() + " p where p.institutionalMail = :institutionalMail";
+        Long count = em.createQuery(jpql, Long.class)
+                .setParameter("institutionalMail", institutionalMail)
+                .getSingleResult();
+        return count > 0;
+    }
+    public boolean existsById(Integer id) {
+        String jpql = "select count(p) from " + entityClass.getSimpleName() + " p where p.id = :id";
+        Long count = em.createQuery(jpql, Long.class)
+                .setParameter("id", id)
+                .getSingleResult();
+        return count > 0;
+    }
+
 }
