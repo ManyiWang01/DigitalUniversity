@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -24,6 +25,10 @@ public class StudentService {
         student.setLastName(lastName);
         student.setInstitutionalMail(generateUniqueInstitutionalEmail(firstName, lastName));
         return studentRepository.save(student);
+    }
+
+    public Student findStudent(Integer studentId) {
+        return studentRepository.find(studentId);
     }
 
     private String generateUniqueInstitutionalEmail(String firstName, String lastName) {
@@ -105,9 +110,12 @@ public class StudentService {
         studentRepository.upgradeAllEligibleStudent();
     }
 
-    public Student findStudent(Integer studentId) {
-        return studentRepository.find(studentId);
+    public Student findStudentByInstitutionalMail(String institutionalMail) {
+        return studentRepository.findByInstitutionalMail(institutionalMail);
     }
 
+    public List<Student> findStudentByName(String firstName, String lastName) {
+        return studentRepository.findByName(firstName, lastName);
+    }
 
 }

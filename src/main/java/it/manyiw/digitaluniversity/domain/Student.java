@@ -17,7 +17,7 @@ public class Student extends Person {
 
 //    @ManyToMany(mappedBy = "attendingStudents")
 //    private Set<Course> attendedCourses = new HashSet<>();
-    @OneToMany(mappedBy = "student",  cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "student",  cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Enrollment> enrolledCourses = new HashSet<>();
 
     @Min(value = 1, message = "A student cannot be lower than grade 1")

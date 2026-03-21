@@ -3,7 +3,9 @@ package it.manyiw.digitaluniversity.repository;
 import it.manyiw.digitaluniversity.domain.Person;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 
+import java.util.Collections;
 import java.util.List;
 
 public abstract class PersonRepository<T extends Person> {
@@ -38,26 +40,44 @@ public abstract class PersonRepository<T extends Person> {
                 .getResultList();
     }
 
-    public List<T> findByFirstName(String firstName) {
-        String jpql = "select p from " + entityClass.getSimpleName() + " p where p.firstName = :firstName";
-        return em.createQuery(jpql, entityClass)
-                .setParameter("firstName", firstName)
-                .getResultList();
-    }
-
-    public List<T> findByLastName(String lastName) {
-        String jpql = "select p from " + entityClass.getSimpleName() + " p where p.lastName = :lastName";
-        return em.createQuery(jpql, entityClass)
-                .setParameter("lastName", lastName)
-                .getResultList();
-    }
+//    public List<T> findByFirstName(String firstName) {
+//        String jpql = "select p from " + entityClass.getSimpleName() + " p where p.firstName = :firstName";
+//        return em.createQuery(jpql, entityClass)
+//                .setParameter("firstName", firstName)
+//                .getResultList();
+//    }
+//
+//    public List<T> findByLastName(String lastName) {
+//        String jpql = "select p from " + entityClass.getSimpleName() + " p where p.lastName = :lastName";
+//        return em.createQuery(jpql, entityClass)
+//                .setParameter("lastName", lastName)
+//                .getResultList();
+//    }
 
     public List<T> findByName(String firstName, String lastName) {
-        String jpql = "select p from " + entityClass.getSimpleName() + " p where p.firstName = :firstName and p.lastName = :lastName";
-        return em.createQuery(jpql, entityClass)
-                .setParameter("firstName", firstName)
-                .setParameter("lastName", lastName)
-                .getResultList();
+        String jpql = "select p from " + entityClass.getSimpleName() + " p where 1=1";
+        boolean hasLastName = lastName != null && !lastName.isEmpty();
+        boolean hasFirstName = firstName != null && !firstName.isEmpty();
+        if (!hasFirstName && !hasLastName) {
+            return Collections.emptyList();
+        }
+        else {
+            if (hasLastName) {
+                jpql += " and p.lastName like :lastName";
+            }
+            if (hasFirstName) {
+                jpql += " and p.firstName like :firstName";
+            }
+        }
+        jpql += " order by p.lastName asc, p.firstName asc";
+        TypedQuery<T> query = em.createQuery(jpql, entityClass);
+        if (hasLastName) {
+            query.setParameter("lastName", "%" + lastName + "%");
+        }
+        if (hasFirstName) {
+            query.setParameter("firstName", "%" + firstName + "%");
+        }
+        return query.getResultList();
     }
 
     public T findByInstitutionalMail(String institutionalMail) {
@@ -66,7 +86,6 @@ public abstract class PersonRepository<T extends Person> {
                 .setParameter("institutionalMail", institutionalMail)
                 .getSingleResult();
     }
-
 
     public List<T> findByAge(Integer age) {
         String jpql = "select p from " + entityClass.getSimpleName() + " p where p.age = :age";

@@ -11,4 +11,8 @@ public class Professor extends Person {
 
     @OneToMany(mappedBy = "professor",  cascade = CascadeType.ALL)
     private Set<Assignment> assignments = new HashSet<>();
+
+    public Set<Assignment> getAssignments() {
+        return assignments;
+    }
 }

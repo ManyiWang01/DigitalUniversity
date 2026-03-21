@@ -24,7 +24,7 @@ public class CourseService {
 
     public Integer createCourse(String title, String description, Integer studentLimit, Integer majorId, Integer year) {
         // TODO: wrap in a exception handler, and validate all the inputs.
-        //  Wrap the parameters into DTO/Projection depending on what is required by controller
+        // Wrap the parameters into DTO/Projection depending on what is required by controller
         Course course = new Course();
         if (title == null || title.isEmpty()) {
             throw new IllegalArgumentException("Title cannot be null or empty");
@@ -53,7 +53,7 @@ public class CourseService {
         else  {
             throw new IllegalArgumentException("Major cannot be null");
         }
-        if (year != null && year > 1990) {
+        if (year != null && year > 0) {
             course.setYear(year);
         }
         else {
@@ -115,5 +115,11 @@ public class CourseService {
             }
         }
         return courseRepository.findAllCoursesByYear(year);
+    }
+    public void deleteCourse(Integer id) {
+        Course course = courseRepository.find(id);
+        if (course != null) {
+            courseRepository.delete(course);
+        }
     }
 }

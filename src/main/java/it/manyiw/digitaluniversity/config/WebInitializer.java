@@ -14,7 +14,7 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
     // We can use the same class for now or a separate WebConfig
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return null;
+        return new Class[] { WebConfig.class };
     }
 
     // 3. Which URLs should this Spring app handle?

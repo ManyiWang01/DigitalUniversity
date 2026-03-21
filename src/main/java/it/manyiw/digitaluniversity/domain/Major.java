@@ -4,10 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.SoftDeleteType;
 
 @Entity
 @Table(name = "majors")
-@SoftDelete(columnName = "deleted")
+@SoftDelete(columnName = "deleted", strategy = SoftDeleteType.DELETED)
 public class Major {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,8 +18,6 @@ public class Major {
     @NotBlank(message = "Enter a valid name of this major")
     @Column(nullable = false, unique = true)
     private String name;
-
-    private boolean deleted = false;
 
     public Major() {}
 
@@ -32,13 +31,5 @@ public class Major {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void reopen() {
-        this.deleted = false;
     }
 }

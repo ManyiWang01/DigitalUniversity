@@ -8,17 +8,14 @@ import jakarta.persistence.*;
 @IdClass(AssignmentId.class)
 public class Assignment {
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH} )
     @JoinColumn(name = "course_id")
     private Course course;
 
     @Id
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH} )
     @JoinColumn(name = "professor_id")
     private Professor professor;
-
-    @Column(nullable = false)
-    private boolean assigned = true;
 
     @Column(nullable = false)
     private Role role;
@@ -37,14 +34,6 @@ public class Assignment {
     public void setProfessor(Professor professor) {
         this.professor = professor;
     }
-
-    public boolean isAssigned() {
-        return assigned;
-    }
-    public void assign() {
-        this.assigned = true;
-    }
-    public void unassign() {this.assigned = false;}
 
     public Role getRole() {
         return role;

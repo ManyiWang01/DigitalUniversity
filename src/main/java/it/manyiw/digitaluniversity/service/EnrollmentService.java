@@ -18,9 +18,9 @@ import java.util.List;
 @Transactional
 public class EnrollmentService {
     // TODO business logic for Enrollment, eg. enrollStudentToCourse, eliminateStudentToCourse, registerVote, cancelVote
-    private EnrollmentRepository enrollmentRepository;
-    private StudentRepository studentRepository;
-    private CourseRepository courseRepository;
+    private final EnrollmentRepository enrollmentRepository;
+    private final StudentRepository studentRepository;
+    private final CourseRepository courseRepository;
 
     public EnrollmentService(@Autowired EnrollmentRepository enrollmentRepository,
                              @Autowired StudentRepository studentRepository,
@@ -54,13 +54,13 @@ public class EnrollmentService {
         }
         enrollmentRepository.remove(studentId, courseId);
     }
-    public Enrollment getEnrollment(Integer studentId, Integer courseId) {
+    public Enrollment findEnrollment(Integer studentId, Integer courseId) {
         return  enrollmentRepository.find(studentId, courseId);
     }
-    public List<Enrollment> getAllEnrollmentsByStudent(Integer studentId) {
+    public List<Enrollment> findAllEnrollmentsByStudent(Integer studentId) {
         return enrollmentRepository.findAllEnrollmentsByStudentId(studentId);
     }
-    public List<Enrollment> getAllEnrollmentsByCourse(Integer courseId) {
+    public List<Enrollment> findAllEnrollmentsByCourse(Integer courseId) {
         return enrollmentRepository.findAllEnrollmentsByCourseId(courseId);
     }
     public void registerVoteToStudent(Integer studentId, Integer courseId, BigDecimal vote) {

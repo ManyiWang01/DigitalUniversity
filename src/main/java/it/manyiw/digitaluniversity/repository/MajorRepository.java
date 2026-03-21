@@ -35,12 +35,17 @@ public class MajorRepository {
         return em.createQuery(jpql, Major.class).getResultList();
     }
 
-    public List<Major> findAllPastMajors() {
+    public List<Major> findAllClosedMajors() {
         String sql = "select * from majors where deleted = true";
         return em.createNativeQuery(sql, Major.class).getResultList();
     }
 
-    public Major findPastMajorById(Integer majorId) {
+    public List<Major> findAllMajors() {
+        String sql = "select * from majors";
+        return em.createNativeQuery(sql, Major.class).getResultList();
+    }
+
+    public Major findClosedMajorById(Integer majorId) {
         String sql = "select * from majors where major_id = ? and deleted = true";
         return (Major) em.createNativeQuery(sql, Major.class)
                 .setParameter(1, majorId)
@@ -48,10 +53,17 @@ public class MajorRepository {
     }
 
     public Major findMajorByName(String name) {
-        String  jpql = "select m from Major m where m.name = :name";
-        return em.createQuery(jpql, Major.class)
+        String jqpl = "select m from Major m where m.name = :name";
+        return em.createQuery(jqpl, Major.class)
                 .setParameter("name", name)
                 .getSingleResult();
+    }
+
+    public boolean existsByName(String name) {
+        String jqpl = "select count(*) from Major m where m.name = :name";
+        return em.createQuery(jqpl, Long.class)
+                .setParameter("name", name)
+                .getSingleResult() > 0;
     }
 
 }

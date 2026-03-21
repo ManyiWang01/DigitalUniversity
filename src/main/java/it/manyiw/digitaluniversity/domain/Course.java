@@ -6,13 +6,14 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.SoftDeleteType;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "courses")
-@SoftDelete(columnName = "isClosed")
+@SoftDelete(columnName = "isClosed", strategy = SoftDeleteType.DELETED)
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,30 +32,20 @@ public class Course {
     private int registrationLimit = 1;
 
     @NotNull
-    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(cascade = {CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "majorId", nullable = false)
     private Major major;
 
     @Min(value = 1)
     @Max(value = 3)
-    @Column(nullable = false)
+    @Column(nullable = false, name = "yearOfStudy")
     private int year = 1;
 
-    // not changing really much adding them
-//    private int semester;
-//    private int credit;
-
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinTable(name = "student_course", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))
-//    private Set<Student> attendingStudents = new HashSet<>();
-    @OneToMany(mappedBy = "course", cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+    @OneToMany(mappedBy = "course", cascade = {CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.LAZY)
     private Set<Enrollment> enrolledStudents = new HashSet<>();
 
-    @OneToMany(mappedBy = "course", cascade = {CascadeType.REFRESH, CascadeType.MERGE})
+    @OneToMany(mappedBy = "course", cascade = {CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.LAZY)
     private Set<Assignment> teachingProfs = new HashSet<>();
-
-    @Column(nullable = false)
-    private boolean isClosed = true;
 
     public Course() {}
 
@@ -103,13 +94,6 @@ public class Course {
 
     public Set<Assignment> getTeachingProfs() {
         return teachingProfs;
-    }
-
-    public boolean isClosed() {
-        return isClosed;
-    }
-    public void setClosed(boolean closed) {
-        this.isClosed = closed;
     }
 
     @Override

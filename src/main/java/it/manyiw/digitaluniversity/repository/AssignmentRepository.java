@@ -11,8 +11,6 @@ import java.util.List;
 
 @Repository
 public class AssignmentRepository {
-    // TODO findAssignment, findProfessor, ...
-
     @PersistenceContext
     private EntityManager em;
 

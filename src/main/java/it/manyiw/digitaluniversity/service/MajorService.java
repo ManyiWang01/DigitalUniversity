@@ -12,8 +12,7 @@ import java.util.List;
 @Transactional
 public class MajorService {
     // TODO business logic for majors, eg. createNewMajor, closeMajor, findAllMajor
-
-    private MajorRepository majorRepository;
+    private final MajorRepository majorRepository;
 
     public MajorService(@Autowired MajorRepository majorRepository) {
         this.majorRepository = majorRepository;
@@ -29,6 +28,13 @@ public class MajorService {
         return majorRepository.save(major);
     }
 
+    public Major findMajorByName(String name) {
+        return majorRepository.findMajorByName(name);
+    }
+    public Major findMajorById(Integer majorId) {
+        return majorRepository.findMajorById(majorId);
+    }
+
     public void deleteMajor(Integer majorId) {
         majorRepository.delete(majorId);
     }
@@ -36,18 +42,16 @@ public class MajorService {
     public List<Major> findAllOpenMajors() {
         return majorRepository.findAllOpenMajors();
     }
-
-    public List<Major> findAllPastMajors() {
-        return majorRepository.findAllPastMajors();
+    public List<Major> findAllMajors() {
+        return majorRepository.findAllMajors();
+    }
+    public List<Major> findAllClosedMajors() {
+        return majorRepository.findAllClosedMajors();
     }
 
-    public Integer reopenMajor(Integer majorId) {
-        Major major = majorRepository.findPastMajorById(majorId);
-        if (major == null) {
-            throw new IllegalArgumentException("Major with id " + majorId + " does not exist");
-        }
-        major.reopen();
-        return major.getId();
-    }
+    // TODO update method
+//    public Integer updateMajor(Major major) {
+//
+//    }
 
 }

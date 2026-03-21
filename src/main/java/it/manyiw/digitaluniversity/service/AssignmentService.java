@@ -16,9 +16,9 @@ import java.util.List;
 @Service
 @Transactional
 public class AssignmentService {
-    private AssignmentRepository assignmentRepository;
-    private CourseRepository courseRepository;
-    private ProfessorRepository professorRepository;
+    private final AssignmentRepository assignmentRepository;
+    private final CourseRepository courseRepository;
+    private final ProfessorRepository professorRepository;
 
     public AssignmentService(@Autowired AssignmentRepository assignmentRepository,
                              @Autowired CourseRepository courseRepository,
@@ -28,11 +28,14 @@ public class AssignmentService {
         this.professorRepository = professorRepository;
     }
 
-    public List<Assignment> getAllAssignmentsByProfessor(Integer professorId) {
+    public List<Assignment> findAllAssignmentsByProfessor(Integer professorId) {
         return assignmentRepository.findAllAssignmentByProfessor(professorId);
     }
-    public List<Assignment> getAllAssignmentsByCourse(Integer courseId) {
+    public List<Assignment> findAllAssignmentsByCourse(Integer courseId) {
         return assignmentRepository.findAllAssignmentByCourse(courseId);
+    }
+    public Assignment findAssignment(Integer professorId, Integer courseId) {
+        return assignmentRepository.find(professorId, courseId);
     }
 
     public void createAssignment(Integer professorId, Integer courseId, Role role) {
@@ -53,40 +56,10 @@ public class AssignmentService {
             assignment.setProfessor(professor);
             assignment.setCourse(course);
             assignment.setRole(role);
-            assignment.assign();
             assignmentRepository.save(assignment);
-        }
-        else if (!assignment.isAssigned()) {
-            assignment.assign();
-            if (assignment.getRole() != role) {
-                assignment.setRole(role);
-            }
         }
         else if (assignment.getRole() != role) {
             assignment.setRole(role);
-        }
-
-    }
-    public void unassign(Integer professorId, Integer courseId) {
-        Assignment assignment = assignmentRepository.find(professorId, courseId);
-        if (assignment == null) {
-            throw new IllegalStateException("professor with id " +  professorId + " is not assigned to course with id " + courseId);
-        }
-        assignment.unassign();
-    }
-    public void reassign(Integer professorId, Integer courseId, Role role) {
-        Assignment assignment = assignmentRepository.find(professorId, courseId);
-        if (assignment == null) {
-            throw new IllegalStateException("professor with id " +  professorId + " is not assigned to course with id " + courseId);
-        }
-        else {
-            assignment.assign();
-            if (assignment.getRole() != role) {
-                assignment.setRole(role);
-            }
-            else {
-                throw new IllegalStateException("role already assigned to course with id " + courseId);
-            }
         }
     }
 

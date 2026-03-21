@@ -33,13 +33,6 @@ public class StudentRepository extends PersonRepository<Student> {
         return  filterByStatus(StudentStatus.SUSPENDED);
     }
 
-//    public List<Course> findAllAttendedCourses(Integer studentId) {
-//        String jpql = "select c from Student s join s.attendedCourses c where s.id = :id";
-//        return em.createQuery(jpql, Course.class)
-//                .setParameter("id", studentId)
-//                .getResultList();
-//    }
-
     public List<Student> findAllStudentByGrade(Integer grade) {
         String jpql = "select s from Student s where s.grade = :grade";
         return em.createQuery(jpql, Student.class)
